@@ -25,17 +25,18 @@ def tokenize(value):
 def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
-    if len(arguments) != 3:
+    if len(arguments) != 4:
         error("Invalid arguments")
 
     inputName = arguments[1]
-    outputName = arguments[2]
+    number = int(arguments[2])
+    outputName = arguments[3]
 
-    print(inputName, outputName)
+    print(inputName, number, outputName)
 
     # Open the input json file for read
     try:
-        inputFile = open(inputName[1], 'r')
+        inputFile = open(inputName, 'r')
     except IOError:
         error('Invalid file arguments')
 

@@ -41,7 +41,17 @@ def main():
 
     # Load and parse json data
     inputData = json.load(inputFile)
+    inputFile.close()
     dictionary = {'doc_id': []}
+
+    # Open the output json file for write
+    try:
+        outputFile = open(outputName, 'w', newline='')
+    except IOError:
+        error('Invalid file arguments')
+    theWriter = csv.writer(outputFile, delimiter='\t')
+    theWriter.writerow(['ID', 'normalized weight'])
+    outputFile.close()
 
 
 if __name__ == "__main__":

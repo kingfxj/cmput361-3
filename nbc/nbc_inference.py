@@ -28,19 +28,25 @@ def main():
     if len(arguments) != 3:
         error("Invalid arguments")
 
-    inputName = arguments[1]
-    outputName = arguments[2]
+    tsvName = arguments[1]
+    jsonName = arguments[2]
 
-    print(inputName, outputName)
+    print(tsvName, jsonName)
 
-    # Open the input json file for read
+    # Open the input tsv file for read
     try:
-        inputFile = open(inputName[1], 'r')
+        tsvFile = open(tsvName, 'r')
+    except IOError:
+        error('Invalid file arguments')
+
+    # Open the json tsv file for read
+    try:
+        jsonFile = open(jsonName, 'r')
     except IOError:
         error('Invalid file arguments')
 
     # Load and parse json data
-    inputData = json.load(inputFile)
+    jsonData = json.load(jsonFile)
     dictionary = {'doc_id': []}
 
 
