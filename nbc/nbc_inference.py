@@ -54,3 +54,33 @@ if __name__ == "__main__":
     main()
 
     print('\nDone\n')
+#####################################
+#model imported from the TSV created in train
+
+class Test:
+
+    def __init__(self,model,testCorpus):
+        self.model = model
+        self.testCorpus = testCorpus
+        self.busStats = {TP:0,TN,0,FP:0,TN:0}
+        self.entertainStats = {TP:0,TN,0,FP:0,TN:0}
+        self.poliStats = {TP:0,TN,0,FP:0,TN:0}
+        self.sportStats = {TP:0,TN,0,FP:0,TN:0}
+        self.techStats = {TP:0,TN,0,FP:0,TN:0}
+    
+    def run(self):
+        for document in self.testCorpus:
+            
+            for term in document:
+                predClass = argmax(model[term])
+                if predclass==document.category:
+                    #do the stats
+    def getStats(self):
+        # for each class:
+            #return TP,TN, FP,FN
+            #calc F1 macro
+            #calc F1 Micro
+            
+            
+
+
