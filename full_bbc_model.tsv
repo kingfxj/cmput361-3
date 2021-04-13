@@ -1,1 +1,5 @@
-ID	normalized weight
+prior	business	0.49939172749391725
+prior	entertainment	0.2116788321167883
+prior	politics	0.22871046228710462
+prior	sports	0.2798053527980535
+prior	tech	0.21958637469586376

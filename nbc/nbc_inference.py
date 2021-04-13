@@ -38,6 +38,7 @@ def main():
         tsvFile = open(tsvName, 'r')
     except IOError:
         error('Invalid file arguments')
+    print(tsvFile)
 
     # Open the json tsv file for read
     try:
@@ -47,7 +48,7 @@ def main():
 
     # Load and parse json data
     jsonData = json.load(jsonFile)
-    dictionary = {'doc_id': []}
+    print(jsonData)
 
 
 if __name__ == "__main__":
