@@ -75,8 +75,7 @@ class Train:
 
     def getVocab():
         for document in self.corpus:
-            for term in document:
-                if 
+            for term in document: 
                 self.vocab.append(term)
         
         for term in self.vocab:
@@ -135,6 +134,11 @@ class Train:
         self.techPrior= techTotal/docTotal
         
         self.priorList = [{'business':self.busPrior},{'entertainment':self.entertainPrior},{'politics':self.poliPrior},{'sport':self.sportPrior},{'tech':self.techPrior}]
+        file.write('prior','business',self.busPrior )
+        file.write('prior','entertainment',self.entertainPrior )
+        file.write('prior','politics',self.poliPriorPrior )
+        file.write('prior','sports',self.sportPrior )
+        file.write('prior','tech',self.techPrior )
     #calc likelihood:
 
     def getLikelihood():
@@ -149,4 +153,9 @@ class Train:
             for term in document:
                 file.write('Likelihood',docType,term, vocabCounts[term][doctype]/vocabCounts[term]['Total'] )
 
+corpus = trainSet
+train = Train(corpus)
 
+train.getVocab()
+train.getPrior()
+train.getLikelihood()
