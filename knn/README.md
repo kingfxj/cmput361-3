@@ -7,8 +7,7 @@
 ### Videos
 
 1. Links to videos explaining your kNN classifier:
-    * Link to Student 1's video:
-    * Link to Student 2's video:
+    * https://drive.google.com/drive/folders/1Qiv9mghBvNpjhn3UePAWjPz3Syer-_bX?usp=sharing
 
 
 ## TODO:
