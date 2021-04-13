@@ -36,10 +36,8 @@ class Train:
 
     def getVocab(self):
         for document in self.corpus:
-            #print(document['text'])
             for term in document['text'].split(): 
                 self.vocab.append(term)
-                #print(term)
         
         for term in self.vocab:
             if term not in self.vocabCounts:
@@ -66,9 +64,7 @@ class Train:
 
 
     def getPrior(self, writer):
-        #print(self.vocabCounts)
-        #return['prior', class,priorcalced]
-        #prior is the probability of the class c/ weight indicating th erelavtive freq of c
+
         busTotal=0
         entertainTotal=0
         poliTotal = 0
@@ -108,13 +104,10 @@ class Train:
     #calc likelihood:
 
     def getLikelihood(self, writer):
-        #use add1
-        #dictionary: key= term, item = array=[class, probability]
-        #return ['likelihood,{term:[class,probability]}]
+        
         for term in self.vocabCounts:
-            #print(self.vocabCounts['business'])
-            #docLength = len(document)
-            #docType = document['category']
+         
+
             docType=['null',0]
 
             if self.vocabCounts[term]['business']>docType[1]:
@@ -128,11 +121,8 @@ class Train:
                 docType=[['sport'],self.vocabCounts[term]['sport']]
             if self.vocabCounts[term]['tech']>docType[1]:
                 docType=[['tech'],self.vocabCounts[term]['tech']]
-            #print(term)
-            #CHANGE TO LOG PROBABILITY
-            #for term in document:
+            
             writer.writerow(['Likelihood',docType[0][0],term,self.vocabCounts[term][docType[0][0]]/self.vocabCounts[term]['Total']])
-            #writer.writerow(['Likelihood','doctypePlaceHolder', self.vocabCounts[term], self.vocabCounts[term][docType]/self.vocabCounts[term]['Total']])
 
 
 def main():
