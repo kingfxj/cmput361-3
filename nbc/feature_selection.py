@@ -49,3 +49,34 @@ if __name__ == "__main__":
     main()
 
     print('\nDone\n')
+
+
+###########################################################################
+#take model from train, 
+#produce an output file with same format as input file from train
+
+#calc mutual info of terms and classes
+class FeatureSelect:
+
+    def __init__(self, model, vocab):
+        self.model = model
+        self.k = k
+        self.vocab = vocab
+        self.L=[]
+        self.topFeatures = []
+
+    def selectFeatures(self):
+        for term in self.vocab:
+            #Compute the terms shared info with each class
+            # L.append(argmax(shared information))
+
+    def getTopK(self):
+        iter = 0
+        while iter <self.k:
+            self.topFeatures.append(self.L[iter])
+            iter+=1
+        
+    def createOutput(self):
+        for feature in self.topFeatures:
+            #write to a file with identical formatting to the training set
+            file.write(feasture)
