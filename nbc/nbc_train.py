@@ -85,8 +85,8 @@ class Train:
                 sportTotal+=1
                 docTotal+=1
             if document['category'] =='tech':
-                busTotal+=1
                 techTotal+=1
+                docTotal+=1
         
 
         self.busPrior= busTotal/docTotal
@@ -107,13 +107,13 @@ class Train:
         #use add1
         #dictionary: key= term, item = array=[class, probability]
         #return ['likelihood,{term:[class,probability]}]
-        for document in self.corpus:
-            docLength = len(document)
-            docType = document['category']
-            
+        for term in self.vocab:
+            #docLength = len(document)
+            #docType = document['category']
+            print(term)
             #CHANGE TO LOG PROBABILITY
-            for term in document:
-                writer.writerow(['Likelihood',docType, self.vocabCounts[term], self.vocabCounts[term][docType]/self.vocabCounts[term]['Total']])
+            #for term in document:
+            #writer.writerow(['Likelihood',docType, self.vocabCounts[term], self.vocabCounts[term][docType]/self.vocabCounts[term]['Total']])
 
 
 def main():
