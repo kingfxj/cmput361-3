@@ -36,15 +36,17 @@ class Train:
 
     def getVocab(self):
         for document in self.corpus:
-            for term in document: 
+            #print(document['text'])
+            for term in document['text'].split(): 
                 self.vocab.append(term)
+                #print(term)
         
         for term in self.vocab:
             if term not in self.vocabCounts:
                 self.vocabCounts[term] = {'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
 
         for document in self.corpus:
-            for term in document:
+            for term in document['text'].split():
                 if document['category'] =='business':
                     self.vocabCounts[term]['business']+=1
                     self.vocabCounts[term]['Total']+=1
@@ -62,7 +64,9 @@ class Train:
                     self.vocabCounts[term]['Total']+=1
 
 
+
     def getPrior(self, writer):
+        #print(self.vocabCounts)
         #return['prior', class,priorcalced]
         #prior is the probability of the class c/ weight indicating th erelavtive freq of c
         busTotal=0
@@ -107,13 +111,28 @@ class Train:
         #use add1
         #dictionary: key= term, item = array=[class, probability]
         #return ['likelihood,{term:[class,probability]}]
-        for term in self.vocab:
+        for term in self.vocabCounts:
+            #print(self.vocabCounts['business'])
             #docLength = len(document)
             #docType = document['category']
-            print(term)
+            docType=['null',0]
+
+            if self.vocabCounts[term]['business']>docType[1]:
+                docType=[['business'],self.vocabCounts[term]['business']]
+            if self.vocabCounts[term]['entertainment']>docType[1]:
+                docType=[['entertainment'],self.vocabCounts[term]['entertainment']]
+            if self.vocabCounts[term]['politics']>docType[1]:
+                docType=[['politics'],self.vocabCounts[term]['politics']]
+
+            if self.vocabCounts[term]['sport']>docType[1]:
+                docType=[['sport'],self.vocabCounts[term]['sport']]
+            if self.vocabCounts[term]['tech']>docType[1]:
+                docType=[['tech'],self.vocabCounts[term]['tech']]
+            #print(term)
             #CHANGE TO LOG PROBABILITY
             #for term in document:
-            #writer.writerow(['Likelihood',docType, self.vocabCounts[term], self.vocabCounts[term][docType]/self.vocabCounts[term]['Total']])
+            writer.writerow(['Likelihood',docType[0][0],term,self.vocabCounts[term][docType[0][0]]/self.vocabCounts[term]['Total']])
+            #writer.writerow(['Likelihood','doctypePlaceHolder', self.vocabCounts[term], self.vocabCounts[term][docType]/self.vocabCounts[term]['Total']])
 
 
 def main():
