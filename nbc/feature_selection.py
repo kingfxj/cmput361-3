@@ -42,7 +42,7 @@ def main():
 
     # Load and parse json data
     inputData = json.load(inputFile)
-    dictionary = {'doc_id': []}
+    print(inputData)
 
 
 if __name__ == "__main__":
