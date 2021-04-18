@@ -38,7 +38,21 @@ def main():
         tsvFile = open(tsvName, 'r')
     except IOError:
         error('Invalid file arguments')
-    print(tsvFile)
+    csvReader = csv.reader(tsvFile, delimiter='\t')
+    prior = {}
+    likelihood = {}
+    for row in csvReader:
+        if len(row) == 3:
+            prior[row[1]] = float(row[2])
+        else:
+            likelihood[row[2]] = [row[2], float(row[3])]
+    print(prior, '\n')
+    for i in prior.keys():
+        print(i, prior[i])
+    print('\n')
+    # print(likelihood)
+    for i in likelihood.keys():
+        print(i, likelihood[i])
 
     # Open the json tsv file for read
     try:
@@ -48,13 +62,16 @@ def main():
 
     # Load and parse json data
     jsonData = json.load(jsonFile)
-    print(jsonData)
+    for i in jsonData:
+        pass
+    # test = Test()
 
 
 if __name__ == "__main__":
     main()
 
     print('\nDone\n')
+
 #####################################
 #model imported from the TSV created in train
 
@@ -63,25 +80,27 @@ class Test:
     def __init__(self,model,testCorpus):
         self.model = model
         self.testCorpus = testCorpus
-        self.busStats = {TP:0,TN,0,FP:0,TN:0}
-        self.entertainStats = {TP:0,TN,0,FP:0,TN:0}
-        self.poliStats = {TP:0,TN,0,FP:0,TN:0}
-        self.sportStats = {TP:0,TN,0,FP:0,TN:0}
-        self.techStats = {TP:0,TN,0,FP:0,TN:0}
-    
+        self.busStats = {'TP':0 ,'TN':0 , 'FP':0, 'FN':0}
+        self.entertainStats = {'TP':0,'TN':0,'FP':0,'FN':0}
+        self.poliStats = {'TP':0, 'TN':0, 'FP':0, 'FN':0}
+        self.sportStats = {'TP':0, 'TN':0, 'FP':0, 'FN':0}
+        self.techStats = {'TP':0, 'TN':0, 'FP':0, 'FN':0}
+
+    def argmax(self, term):
+        return False
+
     def run(self):
         for document in self.testCorpus:
             
             for term in document:
-                predClass = argmax(model[term])
-                if predclass==document.category:
+                predClass = self.argmax(term)
+                if predClass==document.category:
                     #do the stats
+                    pass
+
     def getStats(self):
         # for each class:
             #return TP,TN, FP,FN
             #calc F1 macro
             #calc F1 Micro
-            
-            
-
-
+        pass

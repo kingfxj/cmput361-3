@@ -1,4 +1,6 @@
 import csv, json, nltk, string, sys
+from nltk import WordNetLemmatizer
+import math
 
 
 def error(name):
@@ -11,120 +13,63 @@ def error(name):
 
 
 # Tokenize the list value
-def tokenize(value):
-    words = []
-    for word in value:
-        # Lemmatize the word
-        word = word.translate(str.maketrans('', '', string.punctuation)).lower()
-        word = nltk.WordNetLemmatizer().lemmatize(word)
-        # Remove punctuations and make all words lower case
-        words.append(word)
-    return words
+def tokenize(word):
+     # Lemmatize the word
+    word = word.translate(str.maketrans('', '', string.punctuation)).lower()
+    word = nltk.WordNetLemmatizer().lemmatize(word)
+    # Remove punctuations and make all words lower case
+    return word
 
 
-# classes = ['business','entertainment','politics','sport','tech']
 
-#calc priors
 
 class Train:
     def __init__(self,corpus):
         self.corpus = corpus
-        self.priorList = []
+        self.priors= {'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
         self.likelihoods = []
-        self.vocab = []
+        self.vocab = set()
+        self.size = 0
+        self.freqDist = {}
         self.vocabCounts={}
 
+    #get vocabulary of Corpus in an unordered set
     def getVocab(self):
         for document in self.corpus:
-            for term in document['text'].split(): 
-                self.vocab.append(term)
-        
+            document['text'] = document['text'].split()            
+            for term in document['text']:
+                self.size+=1
+                term = tokenize(term)
+                self.vocab.add(term)
+    
+    #get occurances of each token in each class
+    def getFreq(self):
         for term in self.vocab:
-            if term not in self.vocabCounts:
-                self.vocabCounts[term] = {'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
-
+            self.freqDist[term]={'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
         for document in self.corpus:
-            for term in document['text'].split():
-                if document['category'] =='business':
-                    self.vocabCounts[term]['business']+=1
-                    self.vocabCounts[term]['Total']+=1
-                if document['category'] =='entertainment':
-                    self.vocabCounts[term]['entertainment']+=1
-                    self.vocabCounts[term]['Total']+=1
-                if document['category'] =='politics':
-                    self.vocabCounts[term]['politics']+=1
-                    self.vocabCounts[term]['Total']+=1
-                if document['category'] =='sport':
-                    self.vocabCounts[term]['sport']+=1
-                    self.vocabCounts[term]['Total']+=1
-                if document['category'] =='tech':
-                    self.vocabCounts[term]['tech']+=1
-                    self.vocabCounts[term]['Total']+=1
-
-
-
-    def getPrior(self, writer):
-
-        busTotal=0
-        entertainTotal=0
-        poliTotal = 0
-        sportTotal=0
-        techTotal = 0
-        docTotal = 0
+            for token in document['text']:
+                token = tokenize(token)
+                self.freqDist[token][document['category']]+=1
+                self.freqDist[token]['Total']+=1
+    
+    #for each class
+    def getPriors(self,writer):
         for document in self.corpus:
-            if document['category'] =='business':
-                busTotal+=1
-                docTotal+=1
-            if document['category'] =='entertainment':
-                entertainTotal+=1
-                docTotal+=1
-            if document['category'] =='politics':
-                poliTotal+=1
-                docTotal+=1
-            if document['category'] =='sport':
-                sportTotal+=1
-                docTotal+=1
-            if document['category'] =='tech':
-                techTotal+=1
-                docTotal+=1
-        
+            self.priors[document['category']]+=1
+            self.priors['Total']+=1
+        for key in self.priors:
+            if key != 'Total':
+                writer.writerow(['prior',key,math.log(self.priors[key]/self.priors['Total'],2)])
 
-        self.busPrior= busTotal/docTotal
-        self.entertainPrior = entertainTotal/docTotal
-        self.poliPrior = poliTotal/docTotal
-        self.sportPrior=sportTotal/docTotal
-        self.techPrior= techTotal/docTotal
-        
-        self.priorList = [{'business':self.busPrior},{'entertainment':self.entertainPrior},{'politics':self.poliPrior},{'sport':self.sportPrior},{'tech':self.techPrior}]
-        writer.writerow(['prior','business',self.busPrior])
-        writer.writerow(['prior','entertainment',self.entertainPrior])
-        writer.writerow(['prior','politics', self.poliPrior])
-        writer.writerow(['prior','sports',self.sportPrior])
-        writer.writerow(['prior','tech',self.techPrior])
-    #calc likelihood:
-
+    #get probability for each token in each class
     def getLikelihood(self, writer):
+        for word in self.freqDist:
+            for category in self.freqDist[word]:
+                if category != 'Total' and word != '':
+                    self.freqDist[word][category]+=1
+                    divisor = self.size +1
+                    writer.writerow(['likelihood',category,word,math.log(self.freqDist[word][category]/divisor,2)])
         
-        for term in self.vocabCounts:
-         
-
-            docType=['null',0]
-
-            if self.vocabCounts[term]['business']>docType[1]:
-                docType=[['business'],self.vocabCounts[term]['business']]
-            if self.vocabCounts[term]['entertainment']>docType[1]:
-                docType=[['entertainment'],self.vocabCounts[term]['entertainment']]
-            if self.vocabCounts[term]['politics']>docType[1]:
-                docType=[['politics'],self.vocabCounts[term]['politics']]
-
-            if self.vocabCounts[term]['sport']>docType[1]:
-                docType=[['sport'],self.vocabCounts[term]['sport']]
-            if self.vocabCounts[term]['tech']>docType[1]:
-                docType=[['tech'],self.vocabCounts[term]['tech']]
-            
-            writer.writerow(['Likelihood',docType[0][0],term,self.vocabCounts[term][docType[0][0]]/self.vocabCounts[term]['Total']])
-
-
 def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
@@ -156,8 +101,10 @@ def main():
     train = Train(inputData)
 
     train.getVocab()
-    train.getPrior(theWriter)
+    train.getFreq()
+    train.getPriors(theWriter)
     train.getLikelihood(theWriter)
+ 
     outputFile.close()
 
 
