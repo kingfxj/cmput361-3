@@ -26,19 +26,25 @@ def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
     if len(arguments) != 3:
-        error("Invalid arguments")
+        error("Invalid number of arguments")
 
     tsvName = arguments[1]
     jsonName = arguments[2]
-
-    print(tsvName, jsonName)
 
     # Open the input tsv file for read
     try:
         tsvFile = open(tsvName, 'r')
     except IOError:
-        error('Invalid file arguments')
+        error('Invalid tsv file argument')
+
+    # Open the json tsv file for read
+    try:
+        jsonFile = open(jsonName, 'r')
+    except IOError:
+        error('Invalid json file argument')
+
     csvReader = csv.reader(tsvFile, delimiter='\t')
+
     prior = {}
     likelihood = {}
     for row in csvReader:
@@ -46,34 +52,29 @@ def main():
             prior[row[1]] = float(row[2])
         else:
             likelihood[row[2]] = [row[2], float(row[3])]
+
+    tsvFile.close()
+
     print(prior, '\n')
     for i in prior.keys():
-        print(i, prior[i])
+        print('key =', i + ',', 'value =', prior[i])
     print('\n')
     # print(likelihood)
     for i in likelihood.keys():
-        print(i, likelihood[i])
-
-    # Open the json tsv file for read
-    try:
-        jsonFile = open(jsonName, 'r')
-    except IOError:
-        error('Invalid file arguments')
+        print('key =', i + ',', 'value =', likelihood[i])
 
     # Load and parse json data
     jsonData = json.load(jsonFile)
+    jsonFile.close()
+
     for i in jsonData:
         pass
+
     # test = Test()
 
 
-if __name__ == "__main__":
-    main()
-
-    print('\nDone\n')
-
 #####################################
-#model imported from the TSV created in train
+# Model imported from the TSV created in train
 
 class Test:
 
@@ -104,3 +105,9 @@ class Test:
             #calc F1 macro
             #calc F1 Micro
         pass
+
+
+if __name__ == "__main__":
+    main()
+
+    print('\nDone\n')

@@ -1,6 +1,6 @@
-import csv, json, nltk, string, sys
+import csv, json, math, nltk, string, sys
 from nltk import WordNetLemmatizer
-import math
+from os import path
 
 
 def error(name):
@@ -21,8 +21,6 @@ def tokenize(word):
     return word
 
 
-
-
 class Train:
     def __init__(self,corpus):
         self.corpus = corpus
@@ -33,7 +31,7 @@ class Train:
         self.freqDist = {}
         self.vocabCounts={}
 
-    #get vocabulary of Corpus in an unordered set
+    # Get vocabulary of Corpus in an unordered set
     def getVocab(self):
         for document in self.corpus:
             document['text'] = document['text'].split()            
@@ -42,17 +40,18 @@ class Train:
                 term = tokenize(term)
                 self.vocab.add(term)
     
-    #get occurances of each token in each class
+    # Get occurances of each token in each class
     def getFreq(self):
         for term in self.vocab:
             self.freqDist[term]={'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
+
         for document in self.corpus:
             for token in document['text']:
                 token = tokenize(token)
                 self.freqDist[token][document['category']]+=1
                 self.freqDist[token]['Total']+=1
-    
-    #for each class
+
+    # For each class
     def getPriors(self,writer):
         for document in self.corpus:
             self.priors[document['category']]+=1
@@ -61,7 +60,7 @@ class Train:
             if key != 'Total':
                 writer.writerow(['prior',key,math.log(self.priors[key]/self.priors['Total'],2)])
 
-    #get probability for each token in each class
+    # Get probability for each token in each class
     def getLikelihood(self, writer):
         for word in self.freqDist:
             for category in self.freqDist[word]:
@@ -74,32 +73,39 @@ def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
     if len(arguments) != 3:
-        error("Invalid arguments")
+        error("Invalid number of arguments")
 
     inputName = arguments[1]
     outputName = arguments[2]
-
-    print(inputName, outputName)
 
     # Open the input json file for read
     try:
         inputFile = open(inputName, 'r')
     except IOError:
-        error('Invalid file arguments')
+        error('Invalid input file argument')
+
+    # Open the output file for write
+    if path.exists(outputName):
+        while True:
+            user = input('Do you want to replace the file: '+ outputName + '?\n').lower()
+            if user in ['no', 'n']:
+                print('Mission aborted')
+                return
+            elif user in ['yes', 'y']:
+                break
+
+    try:
+        outputFile = open(outputName, 'w', newline='')
+    except IOError:
+        error('Invalid output file argument')
 
     # Load and parse json data
     inputData = json.load(inputFile)
     inputFile.close()
 
-    # Open the output file for write
-    try:
-        outputFile = open(outputName, 'w', newline='')
-    except IOError:
-        error('Invalid file arguments')
     theWriter = csv.writer(outputFile, delimiter='\t')
 
     train = Train(inputData)
-
     train.getVocab()
     train.getFreq()
     train.getPriors(theWriter)
