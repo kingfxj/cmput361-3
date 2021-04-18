@@ -55,6 +55,10 @@ def main():
 
     tsvFile.close()
 
+    # Load and parse json data
+    jsonData = json.load(jsonFile)
+    jsonFile.close()
+
     print(prior, '\n')
     for i in prior.keys():
         print('key =', i + ',', 'value =', prior[i])
@@ -62,10 +66,6 @@ def main():
     # print(likelihood)
     for i in likelihood.keys():
         print('key =', i + ',', 'value =', likelihood[i])
-
-    # Load and parse json data
-    jsonData = json.load(jsonFile)
-    jsonFile.close()
 
     for i in jsonData:
         pass

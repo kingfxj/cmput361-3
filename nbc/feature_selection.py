@@ -47,9 +47,10 @@ def main():
 
     if path.exists(outputName):
         while True:
-            user = input('Do you want to replace the file: '+ outputName + '?\n').lower()
+            user = input('Do you want to replace the file: ' + outputName + '?\n').lower()
             if user in ['no', 'n']:
                 print('Mission aborted')
+                inputFile.close()
                 return
             elif user in ['yes', 'y']:
                 break

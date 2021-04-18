@@ -35,16 +35,16 @@ python3 ./nbc/feature_selection.py ./data/train.json 10 ./data/train_top_10.json
 python3 ./knn/knn_create_model.py ./data/train.json ./bbc_model.tsv
 
 # Task 6 : Make Inferences on the Knn model from (5) with the following command:
- python3 ./knn/knn_inference.py ./bbc_doc_vectors.tsv [VALUE FOR K] ./data/test.json
+ python3 ./knn/knn_inference.py ./bbc_model.tsv [VALUE FOR K] ./data/test.json
 
-For example top 10:\
- python3 ./knn/knn_inference.py ./bbc_doc_vectors.tsv [VALUE FOR K] ./data/test.json
+For example top 11:\
+ python3 ./knn/knn_inference.py ./bbc_model.tsv 11 ./data/test.json
 
 # Task 7 : The Effect of different values of k on the Knn results
- python3 ./knn/knn_inference.py ./bbc_doc_vectors.tsv [VALUE FOR K] ./data/test.json
+ python3 ./knn/knn_inference.py ./bbc_model.tsv [VALUE FOR K] ./data/test.json
 
-For example top 10:\
- python3 ./knn/knn_inference.py ./bbc_doc_vectors.tsv [VALUE FOR K] ./data/test.json
+For example top 11:\
+ python3 ./knn/knn_inference.py ./bbc_model.tsv 11 ./data/test.json
 
 # Videos
 
