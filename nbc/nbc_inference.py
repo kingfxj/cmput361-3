@@ -38,7 +38,21 @@ def main():
         tsvFile = open(tsvName, 'r')
     except IOError:
         error('Invalid file arguments')
-    print(tsvFile)
+    csvReader = csv.reader(tsvFile, delimiter='\t')
+    prior = {}
+    likelihood = {}
+    for row in csvReader:
+        if len(row) == 3:
+            prior[row[1]] = float(row[2])
+        else:
+            likelihood[row[2]] = [row[2], float(row[3])]
+    print(prior, '\n')
+    for i in prior.keys():
+        print(i, prior[i])
+    print('\n')
+    # print(likelihood)
+    for i in likelihood.keys():
+        print(i, likelihood[i])
 
     # Open the json tsv file for read
     try:
@@ -48,7 +62,7 @@ def main():
 
     # Load and parse json data
     jsonData = json.load(jsonFile)
-    print(jsonData)
+    # test = Test()
 
 
 if __name__ == "__main__":
