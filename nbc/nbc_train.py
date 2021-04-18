@@ -33,6 +33,7 @@ class Train:
         self.freqDist = {}
         self.vocabCounts={}
 
+    #get vocabulary of Corpus in an unordered set
     def getVocab(self):
         for document in self.corpus:
             document['text'] = document['text'].split()            
@@ -41,6 +42,7 @@ class Train:
                 term = tokenize(term)
                 self.vocab.add(term)
     
+    #get occurances of each token in each class
     def getFreq(self):
         for term in self.vocab:
             self.freqDist[term]={'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
@@ -49,7 +51,8 @@ class Train:
                 token = tokenize(token)
                 self.freqDist[token][document['category']]+=1
                 self.freqDist[token]['Total']+=1
-        
+    
+    #for each class
     def getPriors(self,writer):
         for document in self.corpus:
             self.priors[document['category']]+=1
@@ -58,6 +61,7 @@ class Train:
             if key != 'Total':
                 writer.writerow(['prior',key,math.log(self.priors[key]/self.priors['Total'],2)])
 
+    #get probability for each token in each class
     def getLikelihood(self, writer):
         for word in self.freqDist:
             for category in self.freqDist[word]:
