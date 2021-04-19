@@ -1,25 +1,126 @@
 import csv, json, nltk, string, sys
 
-
 def error(name):
-    '''
-    Print out the error and exit the program with -1
-    input: name is the name of the error
-    '''
+    #Print out the error and exit the program with -1
+    #input: name is the name of the error
+    
     print(name, file=sys.stderr)
     exit(-1)
 
 
 # Tokenize the list value
-def tokenize(value):
-    words = []
-    for word in value:
-        # Lemmatize the word
-        word = word.translate(str.maketrans('', '', string.punctuation)).lower()
-        word = nltk.WordNetLemmatizer().lemmatize(word)
-        # Remove punctuations and make all words lower case
-        words.append(word)
-    return words
+def tokenize(word):
+    # Remove punctuations and make all words lower case 
+    # Lemmatize the word
+    word = word.translate(str.maketrans('', '', string.punctuation)).lower()
+    word = nltk.WordNetLemmatizer().lemmatize(word)
+    return word
+
+def listToDict(array):
+    #convert the data from tsv into a dictionary for each term.
+    likelihoodDict = {}
+    for i in array:
+        likelihoodDict[i[2]]={'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0}
+    for i in array:
+        if likelihoodDict[i[2]][i[1]]== 0:
+            likelihoodDict[i[2]][i[1]] = float(i[3])
+    return likelihoodDict
+class Test:
+
+    def __init__(self,prior,likelihood,testCorpus):
+        self.priors = prior
+        self.likelihoods = likelihood
+        self.testCorpus = testCorpus
+        self.stats ={'business': {'TP':0 ,'TN':0 , 'FP':0, 'FN':0},
+                    'entertainment':{'TP':0,'TN':0,'FP':0,'FN':0},
+                    'politics':{'TP':0,'TN':0,'FP':0,'FN':0},
+                    'sport':{'TP':0,'TN':0,'FP':0,'FN':0},
+                    'tech': {'TP':0,'TN':0,'FP':0,'FN':0}}
+        self.precisions = {'business': 0,
+                    'entertainment':0,
+                    'politics':0,
+                    'sport':0,
+                    'tech': 0}
+        self.recalls = {'business': 0,
+                    'entertainment':0,
+                    'politics':0,
+                    'sport':0,
+                    'tech': 0}
+        # All values init to 0
+        self.F1s = {'business': 0,
+                    'entertainment':0,
+                    'politics':0,
+                    'sport':0,
+                    'tech': 0}
+
+    def cleanText(self):
+        #tokenize the test data as we did witht the train
+        for document in self.testCorpus:
+            document['text'] = document['text'].split()            
+            for term in document['text']:
+                if term[-1]=='.':
+                    term=term[0:-1]
+                term = tokenize(term)
+
+    def getScores(self):
+        for document in self.testCorpus:
+            category = document['category']
+            score = {}
+            for c in self.priors:
+                score[c] = self.priors[c]
+                for term in document['text']:
+                    #what to do with out of vocab terms?????????
+                    if term in self.likelihoods.keys():
+                        score[c] += self.likelihoods[term][c]
+            prediction = max(score,key=score.get)
+            if category == prediction:
+                self.stats[category]['TP']+=1
+                for key in self.stats.keys():
+                    if key!= category:
+                        self.stats[key]['TN']+=1  
+            if category != prediction:
+                self.stats[prediction]['FP']+=1
+                self.stats[category]['FN']+=1
+
+        
+
+
+
+    def getStats(self):
+        for key in self.stats.keys():
+            print(str(key) + str(self.stats[key]))
+        print('\n Precisions:')
+        for key in self.stats.keys():
+            self.precisions[key]= self.stats[key]['TP']/(self.stats[key]['TP']+self.stats[key]['FP'])
+            print('Precision: '+str(key) + ' ' +str(self.precisions[key]))
+        print('\n Recalls:')
+        for key in self.stats.keys():
+            self.recalls[key]= self.stats[key]['TP']/(self.stats[key]['TP']+self.stats[key]['FN'])
+            print('Recall: '+str(key) + ' ' +str(self.recalls[key]))
+        print('\n F1s:')
+        for key in self.stats.keys():
+            self.F1s[key] = (2*(self.precisions[key]*self.recalls[key])/self.precisions[key]+self.recalls[key])
+            print('F1: '+str(key) + ' ' +str(self.F1s[key]))
+        print('\n Microaverage F1:')
+        #micro and macro F1
+        TP = 0
+        FP = 0
+        FN = 0
+        for key in self.stats.keys():
+            TP += self.stats[key]['TP']
+            FP += self.stats[key]['FP']
+            FN += self.stats[key]['FN']
+        prec = TP/(TP+FP)
+        rec = TP/(TP+FN)
+        microF1 = (2*(prec*rec)/(prec+rec))
+        print(str(microF1))
+        print('\n Macroaverage F1:')
+        macroF1 = 0
+        for key in self.F1s.keys():
+            print(self.F1s[key])
+            macroF1 +=self.F1s[key]
+        macroF1 = macroF1/5
+        print(str(macroF1))
 
 
 def main():
@@ -40,19 +141,12 @@ def main():
         error('Invalid file arguments')
     csvReader = csv.reader(tsvFile, delimiter='\t')
     prior = {}
-    likelihood = {}
+    likelihood = []
     for row in csvReader:
-        if len(row) == 3:
+        if row[0] == 'prior':
             prior[row[1]] = float(row[2])
         else:
-            likelihood[row[2]] = [row[2], float(row[3])]
-    print(prior, '\n')
-    for i in prior.keys():
-        print(i, prior[i])
-    print('\n')
-    # print(likelihood)
-    for i in likelihood.keys():
-        print(i, likelihood[i])
+            likelihood.append(row)
 
     # Open the json tsv file for read
     try:
@@ -62,45 +156,16 @@ def main():
 
     # Load and parse json data
     jsonData = json.load(jsonFile)
-    for i in jsonData:
-        pass
-    # test = Test()
-
+    jsonFile.close()
+    #print(likelihood)
+    likelihood = listToDict(likelihood)
+    #print(likelihood)
+    test = Test(prior,likelihood,jsonData)
+    test.cleanText()
+    test.getScores()
+    test.getStats()
 
 if __name__ == "__main__":
     main()
 
     print('\nDone\n')
-
-#####################################
-#model imported from the TSV created in train
-
-class Test:
-
-    def __init__(self,model,testCorpus):
-        self.model = model
-        self.testCorpus = testCorpus
-        self.busStats = {'TP':0 ,'TN':0 , 'FP':0, 'FN':0}
-        self.entertainStats = {'TP':0,'TN':0,'FP':0,'FN':0}
-        self.poliStats = {'TP':0, 'TN':0, 'FP':0, 'FN':0}
-        self.sportStats = {'TP':0, 'TN':0, 'FP':0, 'FN':0}
-        self.techStats = {'TP':0, 'TN':0, 'FP':0, 'FN':0}
-
-    def argmax(self, term):
-        return False
-
-    def run(self):
-        for document in self.testCorpus:
-            
-            for term in document:
-                predClass = self.argmax(term)
-                if predClass==document.category:
-                    #do the stats
-                    pass
-
-    def getStats(self):
-        # for each class:
-            #return TP,TN, FP,FN
-            #calc F1 macro
-            #calc F1 Micro
-        pass
