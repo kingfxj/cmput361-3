@@ -1,4 +1,5 @@
 import csv, json, nltk, string, sys
+from os import path
 
 
 def error(name):
@@ -65,19 +66,23 @@ def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
     if len(arguments) != 4:
-        error("Invalid arguments")
+        error("Invalid number of arguments")
 
     inputName = arguments[1]
-    number = int(arguments[2])
+    try:
+        number = int(arguments[2])
+    except ValueError:
+        error('Invalid number argument')
     outputName = arguments[3]
 
-    print(inputName, number, outputName)
+    for _ in range(number):
+        pass
 
     # Open the input json file for read
     try:
         inputFile = open(inputName, 'r')
     except IOError:
-        error('Invalid file arguments')
+        error('Invalid input file argument')
 
     # Load and parse json data
     inputData = json.load(inputFile)
@@ -91,3 +96,6 @@ def main():
 if __name__ == "__main__":
     main()
     print('\nDone\n')
+
+
+
