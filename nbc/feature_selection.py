@@ -15,13 +15,11 @@ def tokenize(word):
     word = nltk.WordNetLemmatizer().lemmatize(word)
     # Remove punctuations and make all words lower case
     return word
-#take model from train, 
-#produce an output file with same format as input file from train
 
-#calc mutual info of terms and classes
 class FeatureSelect:
 
     def __init__(self,corpus,k):
+        self.classList = ['business','entertainment','politics','sport','tech']
         self.k = k
         self.corpus = corpus
         self.vocab = set()
@@ -29,16 +27,19 @@ class FeatureSelect:
         self.freqDist = {}
         self.vocabCounts={}
         self.kContainer = {}
+        self.topKterms={'business':[],'entertainment':[],'politics':[],'sport':[],'tech':[]}
 
-    #get vocabulary of Corpus in an unordered set
     def getVocab(self):
+        #get vocabulary of Corpus in an unordered set
         for document in self.corpus:
             document['text'] = document['text'].split()            
             for term in document['text']:
                 self.size+=1
                 term = tokenize(term)
                 self.vocab.add(term)
+
     def getFreq(self):
+        #get frequency of each term for each class
         for term in self.vocab:
             self.freqDist[term]={'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
         for document in self.corpus:
@@ -48,19 +49,50 @@ class FeatureSelect:
                 self.freqDist[token]['Total']+=1
 
     def getMutualInfo(self):
-        print(self.freqDist)
-        for term in self.freqDist:
-            for c in self.freqDist[term]:
-                self.kContainer[c] = {term:self.freqDist[term][c]}
-            #Compute the terms shared info with each class
-            # L.append(argmax(shared information))
+        #currently just finds the most frequently occuring k items 
+        
+        for c in self.classList:
+            self.kContainer[c] = {}
+            for term in self.freqDist:
+                if term != '':
+                    self.kContainer[c][term] = self.freqDist[term][c]
 
-        print(self.kContainer)
-    def createOutput(self,trainData,file):
+
+    def selectTopK(self):
+        #for each class, find the K number of terms that share the most mutual unfo with tthat class
+        for c in self.classList:
+            count = 0
+            while count < self.k:
+                maxInfo ={'placeHolder':0} 
+
+                for term in self.kContainer[c]:
+                    comp = [maxInfo[key] for key in maxInfo.keys()][0]
+                    if self.kContainer[c][term]>comp:
+                        maxInfo = {term: self.kContainer[c][term]}
+
+                for i in maxInfo.keys():
+                    self.kContainer[c].pop(i)
+                termToAdd = [key for key in maxInfo.keys()][0]
+                self.topKterms[c].append(termToAdd)
+                count +=1
+
+
+
+    def createOutput(self,file):
+        #create a new training file with only the Top K included
+        listToWrite = []
+        for document in self.corpus:
+            category = document['category']
+            docToWrite = {'category':category,'text':[]}
+            for term in document['text']:
+                if term in self.topKterms[category]:
+                    docToWrite['text'].append(term)
+            s = ' '
+            docToWrite['text'] = s.join(docToWrite['text'])
+            listToWrite.append(docToWrite)
         with open(file, 'w') as outfile:
-            for i in range(len(trainData)):
-                json.dump(trainData[i], outfile)
-                json.dump('\n', outfile)      
+            json.dump(listToWrite,outfile,ensure_ascii=False,indent = 4 )
+
 
 def main():
     # Get the arguments and validate the number of arguments
@@ -87,12 +119,12 @@ def main():
     # Load and parse json data
     inputData = json.load(inputFile)
     inputFile.close()
-
     featureSelect = FeatureSelect(inputData,number)
     featureSelect.getVocab()
     featureSelect.getFreq()
     featureSelect.getMutualInfo()
-    #featureSelect.createOutput(inputData,outputName)
+    featureSelect.selectTopK()
+    featureSelect.createOutput(outputName)
 if __name__ == "__main__":
     main()
     print('\nDone\n')
