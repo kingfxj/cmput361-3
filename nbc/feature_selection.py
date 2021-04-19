@@ -1,4 +1,5 @@
 import csv, json, nltk, string, sys
+from os import path
 
 
 def error(name):
@@ -26,41 +27,61 @@ def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
     if len(arguments) != 4:
-        error("Invalid arguments")
+        error("Invalid number of arguments")
 
     inputName = arguments[1]
-    number = int(arguments[2])
+    try:
+        number = int(arguments[2])
+    except ValueError:
+        error('Invalid number argument')
     outputName = arguments[3]
 
-    print(inputName, number, outputName)
+    for _ in range(number):
+        pass
 
     # Open the input json file for read
     try:
         inputFile = open(inputName, 'r')
     except IOError:
-        error('Invalid file arguments')
+        error('Invalid input file argument')
+
+    if path.exists(outputName):
+        while True:
+            user = input('Do you want to replace the file: ' + outputName + '?\n').lower()
+            if user in ['no', 'n']:
+                print('Mission aborted')
+                inputFile.close()
+                return
+            elif user in ['yes', 'y']:
+                break
+
+
+    # Open the output json file for write
+    try:
+        outputFile = open(outputName, 'w')
+    except IOError:
+        error('Invalid output file argument')
 
     # Load and parse json data
     inputData = json.load(inputFile)
-    print(inputData)
+    inputFile.close()
+    # print(inputData)
+    for _ in inputData:
+        pass
 
-
-if __name__ == "__main__":
-    main()
-
-    print('\nDone\n')
+    outputFile.close()
 
 
 ###########################################################################
-#take model from train, 
-#produce an output file with same format as input file from train
+# Take model from train, 
+# Produce an output file with same format as input file from train
 
-#calc mutual info of terms and classes
+# Calc mutual info of terms and classes
 class FeatureSelect:
 
     def __init__(self, model, vocab):
         self.model = model
-        self.k = k
+        self.k = 0
         self.vocab = vocab
         self.L=[]
         self.topFeatures = []
@@ -69,6 +90,7 @@ class FeatureSelect:
         for term in self.vocab:
             #Compute the terms shared info with each class
             # L.append(argmax(shared information))
+            print(term)
 
     def getTopK(self):
         iter = 0
@@ -76,7 +98,13 @@ class FeatureSelect:
             self.topFeatures.append(self.L[iter])
             iter+=1
         
-    def createOutput(self):
+    def createOutput(self, outputFile):
         for feature in self.topFeatures:
             #write to a file with identical formatting to the training set
-            file.write(feasture)
+            outputFile.write(feature)
+
+
+if __name__ == "__main__":
+    main()
+
+    print('\nDone\n')

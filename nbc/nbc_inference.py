@@ -25,6 +25,8 @@ def listToDict(array):
         if likelihoodDict[i[2]][i[1]]== 0:
             likelihoodDict[i[2]][i[1]] = float(i[3])
     return likelihoodDict
+
+
 class Test:
 
     def __init__(self,prior,likelihood,testCorpus):
@@ -127,19 +129,25 @@ def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
     if len(arguments) != 3:
-        error("Invalid arguments")
+        error("Invalid number of arguments")
 
     tsvName = arguments[1]
     jsonName = arguments[2]
-
-    print(tsvName, jsonName)
 
     # Open the input tsv file for read
     try:
         tsvFile = open(tsvName, 'r')
     except IOError:
-        error('Invalid file arguments')
+        error('Invalid tsv file argument')
+
+    # Open the json tsv file for read
+    try:
+        jsonFile = open(jsonName, 'r')
+    except IOError:
+        error('Invalid json file argument')
+
     csvReader = csv.reader(tsvFile, delimiter='\t')
+
     prior = {}
     likelihood = []
     for row in csvReader:
@@ -164,6 +172,7 @@ def main():
     test.cleanText()
     test.getScores()
     test.getStats()
+
 
 if __name__ == "__main__":
     main()

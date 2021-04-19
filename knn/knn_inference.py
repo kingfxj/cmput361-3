@@ -21,25 +21,39 @@ def tokenize(value):
         words.append(word)
     return words
 
+# Take in model -->output predictions
+
+class KnnInference:
+
+    def __init__(self, model, k, testCorpus):
+        self.model=model
+        self.k=k
+        self.testCorpus=testCorpus
+
+    def applyKnn(self):
+        #for each doc?? find the nearest neighbor
+        # for each class get argmax 
+        pass
+
 
 def main():
     # Get the arguments and validate the number of arguments
     arguments = sys.argv
     if len(arguments) != 4:
-        error("Invalid arguments")
+        error("Invalid number of arguments")
 
     tsvName = arguments[1]
-    number = int(arguments[2])
+    try:
+        number = int(arguments[2])
+    except ValueError:
+        error("Invalid number argument")
     jsonName = arguments[3]
-
-    print(tsvName, number, jsonName)
 
     # Open the input json file for read
     try:
         tsvFile = open(tsvName, 'r')
     except IOError:
         error('Invalid file arguments')
-    print(tsvFile)
 
     # Open the input json file for read
     try:
@@ -47,25 +61,17 @@ def main():
     except IOError:
         error('Invalid file arguments')
 
+    # Load and parse tsv data
+    tsvFile.close()
+
     # Load and parse json data
     jsonData = json.load(jsonFile)
-    print(jsonData)
+    jsonFile.close()
+
+    KnnInference(tsvFile, number, jsonData)
 
 
 if __name__ == "__main__":
     main()
 
     print('\nDone\n')
-
-#take in model -->output predictions
-
-class KnnInference:
-
-    def __init__(self, model, k,testCorpus):
-        self.model=model
-        self.k=k
-        self.testCorpus=testCorpus
-
-    def applyKnn(self):
-        #for each doc?? find the nearest neighbor
-        for each class get argmax 
