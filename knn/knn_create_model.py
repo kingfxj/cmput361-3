@@ -1,4 +1,5 @@
 import csv, json, nltk, string, sys
+from math import log10
 from os import path
 
 
@@ -12,38 +13,58 @@ def error(name):
 
 
 # Tokenize the list value
-def tokenize(value):
-    words = []
-    for word in value:
-        # Lemmatize the word
-        word = word.translate(str.maketrans('', '', string.punctuation)).lower()
-        word = nltk.WordNetLemmatizer().lemmatize(word)
-        # Remove punctuations and make all words lower case
-        words.append(word)
-    return words
+def tokenize(word):
+    # Lemmatize the word
+    word = word.translate(str.maketrans('', '', string.punctuation)).lower()
+    word = nltk.WordNetLemmatizer().lemmatize(word)
+    return word
    
 # Take train corpus --> output to CSV
 
 class KnnModel:
-    def __init__(self,corpus, outputFile):
+    def __init__(self, corpus, outputFile):
         self.corpus = corpus
-        self.document = []
-        self.IdfLines = []
+        self.documents = []
+        self.dict = {}
+        self.size = 0
+        self.IdfLines = {}
         self.VectorLines = []
         self.outputFile = outputFile
     
     def vectorize(self):
         for document in self.corpus:
+            self.size += 1
+            document['text'] = document['text'].split()
+            vocab = {}
+            for term in document['text']:
+                term = tokenize(term)
+                if term in vocab:
+                    vocab[term] += 1
+                else:
+                    vocab[term] = 1
+                    if term in self.dict:
+                        self.dict[term] += 1
+                    else:
+                        self.dict[term] = 1
             #represent as a vector using ltn wieght scheme
-            self.document.append(document)
+            self.documents.append([document['category'], vocab])
 
     def getIdf(self):
-        for _ in self.document:
-            self.outputFile.writerow(["IDF", "term", "IDFWeight"])
+        for word in sorted(self.dict.keys()):
+            # print(word, self.vocab[word])
+            if len(word) != 0:
+                self.outputFile.writerow(["idf", word, log10(self.size / self.dict[word])])
 
     def getVector(self):
         #for class in model:
-        self.outputFile.writerow(["Vectpr", "class", "STRING REPRESENTATION OF VECTOR FOR CLASS"])
+        for document in self.documents:
+            vector = {}
+            for word in sorted(document[1].keys()):
+                if len(word) != 0:
+                    log = 1 + log10(document[1][word])
+                    idf = log10(self.size / self.dict[word])
+                    vector[word] = log * idf
+            self.outputFile.writerow(["vector", document[0], str(vector)[1:-1]])
 
 
 def main():
@@ -82,7 +103,6 @@ def main():
     inputFile.close()
 
     theWriter = csv.writer(outputFile, delimiter='\t')
-    theWriter.writerow(['ID', 'normalized weight'])
 
     knn = KnnModel(inputData, theWriter)
     knn.vectorize()
