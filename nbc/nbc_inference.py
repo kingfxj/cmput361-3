@@ -65,6 +65,7 @@ class Test:
                 term = tokenize(term)
 
     def getScores(self):
+        #get counts for each document class
         for document in self.testCorpus:
             category = document['category']
             score = {}
@@ -89,21 +90,23 @@ class Test:
 
 
     def getStats(self):
+        #get various required statistics for each class
+        print('\nCounts:')
         for key in self.stats.keys():
             print(str(key) + str(self.stats[key]))
-        print('\n Precisions:')
+        print('\nPrecisions:')
         for key in self.stats.keys():
             self.precisions[key]= self.stats[key]['TP']/(self.stats[key]['TP']+self.stats[key]['FP'])
             print('Precision: '+str(key) + ' ' +str(self.precisions[key]))
-        print('\n Recalls:')
+        print('\nRecalls:')
         for key in self.stats.keys():
             self.recalls[key]= self.stats[key]['TP']/(self.stats[key]['TP']+self.stats[key]['FN'])
             print('Recall: '+str(key) + ' ' +str(self.recalls[key]))
-        print('\n F1s:')
+        print('\nF1s:')
         for key in self.stats.keys():
             self.F1s[key] = (2*(self.precisions[key]*self.recalls[key])/self.precisions[key]+self.recalls[key])
             print('F1: '+str(key) + ' ' +str(self.F1s[key]))
-        print('\n Microaverage F1:')
+        print('\nMicroaverage F1:')
         #micro and macro F1
         TP = 0
         FP = 0
@@ -165,16 +168,12 @@ def main():
     # Load and parse json data
     jsonData = json.load(jsonFile)
     jsonFile.close()
-    #print(likelihood)
     likelihood = listToDict(likelihood)
-    #print(likelihood)
     test = Test(prior,likelihood,jsonData)
     test.cleanText()
     test.getScores()
     test.getStats()
 
-
 if __name__ == "__main__":
     main()
-
     print('\nDone\n')

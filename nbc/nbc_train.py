@@ -51,7 +51,7 @@ class Train:
                 self.freqDist[token][document['category']]+=1
                 self.freqDist[token]['Total']+=1
 
-    # For each class
+    # For each class get prior probability
     def getPriors(self,writer):
         for document in self.corpus:
             self.priors[document['category']]+=1
@@ -60,7 +60,7 @@ class Train:
             if key != 'Total':
                 writer.writerow(['prior',key,math.log(self.priors[key]/self.priors['Total'],2)])
 
-    # Get probability for each token in each class
+    # Get conditional probability for each token in each class
     def getLikelihood(self, writer):
         for word in self.freqDist:
             for category in self.freqDist[word]:

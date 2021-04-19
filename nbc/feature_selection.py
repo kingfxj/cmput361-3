@@ -1,7 +1,6 @@
 import csv, json, nltk, string, sys
 from os import path
 
-
 def error(name):
     #Print out the error and exit the program with -1
     #input: name is the name of the error
