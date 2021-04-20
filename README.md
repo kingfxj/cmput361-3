@@ -36,4 +36,4 @@ python3 ./knn/knn_create_model.py ./data/train.json ./bbc_model.tsv
 
 Add links to videos in the `nbc` and in the `knn` folders.
 * Link to xinjian's video: https://drive.google.com/file/d/1L7slZIFUthgKS-0rZl4P4NDxKZI9qxyL/view?usp=sharing
-* Link to skavalin's video:https://drive.google.com/drive/folders/1Pz_7Vj8AzI9MX8_4iNun2a0sbyLXhnvi
+* Link to skavalin's videos:https://drive.google.com/drive/folders/1Pz_7Vj8AzI9MX8_4iNun2a0sbyLXhnvi

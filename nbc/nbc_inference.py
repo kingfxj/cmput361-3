@@ -3,10 +3,8 @@ import csv, json, nltk, string, sys
 def error(name):
     #Print out the error and exit the program with -1
     #input: name is the name of the error
-    
     print(name, file=sys.stderr)
     exit(-1)
-
 
 # Tokenize the list value
 def tokenize(word):

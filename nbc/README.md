@@ -7,10 +7,11 @@
 ### Videos
 
 1. Links to videos explaining your Naive Bayes Classifier
-    * https://drive.google.com/drive/folders/1Qiv9mghBvNpjhn3UePAWjPz3Syer-_bX?usp=sharing
+    *xinjian's: https://drive.google.com/drive/folders/1Qiv9mghBvNpjhn3UePAWjPz3Syer-_bX?usp=sharing
+    *skavalin's: https://drive.google.com/drive/folders/1aOAo00KkEhMWncM1dAPGmsJyzZLXt1IE?usp=sharing
 1. Links to videos explaining how you did Feature Selection:
-    * https://drive.google.com/drive/folders/1Qiv9mghBvNpjhn3UePAWjPz3Syer-_bX?usp=sharing
-
+    * xinjian's: https://drive.google.com/drive/folders/1Qiv9mghBvNpjhn3UePAWjPz3Syer-_bX?usp=sharing
+    * skavalin's: https://drive.google.com/drive/folders/1egLY9QX3qK0bAWVSEFbHWJz0hezuG_2a?usp=sharing
 
 ### TODO: Impact of feature selection
 
