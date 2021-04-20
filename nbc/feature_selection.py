@@ -97,7 +97,6 @@ class FeatureSelect:
                     part_4 =  (N_0_0/N)*math.log((N*N_0_0)/N_0*N_0,2)
                     mutualInfo = part_1 + part_2+ part_3 + part_4 
                     self.kContainer[c][term] = mutualInfo
-        print(self.binCount)
 
     def selectTopK(self):
         #for each class, find the K number of terms that share the most mutual unfo with tthat class
