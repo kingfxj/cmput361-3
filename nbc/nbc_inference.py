@@ -84,10 +84,6 @@ class Test:
                 self.stats[prediction]['FP']+=1
                 self.stats[category]['FN']+=1
 
-        
-
-
-
     def getStats(self):
         for key in self.stats.keys():
             print(str(key) + str(self.stats[key]))
