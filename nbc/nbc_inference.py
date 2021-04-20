@@ -83,10 +83,6 @@ class Test:
                 self.stats[prediction]['FP']+=1
                 self.stats[category]['FN']+=1
 
-        
-
-
-
     def getStats(self):
         #get various required statistics for each class
         print('\nCounts:')

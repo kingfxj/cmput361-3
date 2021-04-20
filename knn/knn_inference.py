@@ -31,7 +31,7 @@ class KnnInference:
         self.testCorpus=testCorpus
 
     def applyKnn(self):
-        #for each doc?? find the nearest neighbor
+        # For each doc?? find the nearest neighbor
         # for each class get argmax 
         pass
 
@@ -62,7 +62,25 @@ def main():
         error('Invalid file arguments')
 
     # Load and parse tsv data
+    reader = csv.reader(tsvFile, delimiter='\t')
+    idf = {}
+    vector = {'business': [], 'entertainment':[], 'politics':[], 'sport':[], 'tech':[]}
+    for row in reader:
+        if row[0] == 'idf':
+            idf[row[1]] = float(row[2])
+        else:
+            pairs = row[2].split(', ')
+            words = {}
+            for pair in pairs:
+                pair = pair.split(': ')
+                words[pair[0][1:-1]] = float(pair[1])
+            vector[row[1]].append(words)
     tsvFile.close()
+    """ for i in idf.keys():
+        print(i, idf[i])
+    print('\n\n\n')
+    for i in vector:
+        print(i,'\n', vector[i], '\n\n') """
 
     # Load and parse json data
     jsonData = json.load(jsonFile)
