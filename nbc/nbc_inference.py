@@ -116,7 +116,7 @@ class Test:
         print('\n Macroaverage F1:')
         macroF1 = 0
         for key in self.F1s.keys():
-            print(self.F1s[key])
+            #print(self.F1s[key])
             macroF1 +=self.F1s[key]
         macroF1 = macroF1/5
         print(str(macroF1))
