@@ -26,7 +26,7 @@ class FeatureSelect:
         self.classCount = {'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
         self.binCount = {}
         self.vocabCounts={}
-        self.kContainer = {}
+        self.kContainer = {'business':{},'entertainment':{},'politics':{},'sport':{},'tech':{}}
         self.topKterms={'business':[],'entertainment':[],'politics':[],'sport':[],'tech':[]}
 
     def getVocab(self):
@@ -50,7 +50,7 @@ class FeatureSelect:
                 self.binCount[token][document['category']]+=1
                 self.binCount[token]['Total']+=1
         #print(self.binCount)
- 
+        print(self.binCount['the'])
 
     def getClassCount(self):
         for document in self.corpus:
@@ -62,18 +62,19 @@ class FeatureSelect:
         #total number of documents
         N= len(self.corpus)
         for c in self.classList:
-            self.kContainer[c] = {}
+            #self.kContainer[c] = {}
             # Documents that do not contain the term but do contatin the class
             N_0_1 = self.classCount[c] ###################################VERIFY
             
             for term in self.binCount:
+                self.kContainer[c][term] = 0
                 if term != '':
                      # Documents that contain the term
                     N_1 =self.binCount[term]['Total']
                     #Documents that contain the term and contain the class 
                     N_1_1 = self.binCount[term][c]
-                    #if N_1_1 == 0:
-                        #N_1_1=1
+                    if N_1_1 == 0:
+                        N_1_1=1
                     if self.binCount[term][c] == 0:
                         # Documents that Contain the term but do not contain the class
                         N_1_0 = self.binCount[term]['Total']
@@ -95,17 +96,18 @@ class FeatureSelect:
                     part_2 = (N_0_1/N)*math.log((N*N_0_1)/N_0*N_1,2)
                     part_3 = (N_1_0/N)*math.log((N*N_1_0)/N_1*N_0,2)
                     part_4 =  (N_0_0/N)*math.log((N*N_0_0)/N_0*N_0,2)
+                  
                     mutualInfo = part_1 + part_2+ part_3 + part_4 
-                    print(mutualInfo)
                     self.kContainer[c][term] = mutualInfo
-
+            print(c)
+            
     def selectTopK(self):
         #for each class, find the K number of terms that share the most mutual unfo with tthat class
         for c in self.classList:
+
             count = 0
             while count < self.k:
                 maxInfo ={'placeHolder':0} 
-
                 for term in self.kContainer[c]:
                     comp = [maxInfo[key] for key in maxInfo.keys()][0]
                     if self.kContainer[c][term]>comp:
@@ -117,6 +119,9 @@ class FeatureSelect:
                 termToAdd = [key for key in maxInfo.keys()][0]
                 self.topKterms[c].append(termToAdd)
                 count +=1
+            print(c)
+            print(self.topKterms[c])
+
 
     def createOutput(self,file):
         #create a new training file with only the Top K included
