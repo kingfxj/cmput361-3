@@ -1,4 +1,4 @@
-import csv, json, nltk, string, sys
+import csv, json, nltk, string, sys,math
 
 def error(name):
     #Print out the error and exit the program with -1
@@ -21,7 +21,7 @@ def listToDict(array):
         likelihoodDict[i[2]]={'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0}
     for i in array:
         if likelihoodDict[i[2]][i[1]]== 0:
-            likelihoodDict[i[2]][i[1]] = float(i[3])
+            likelihoodDict[i[2]][i[1]] = math.log(float(i[3]),2)
     return likelihoodDict
 
 
@@ -149,7 +149,7 @@ def main():
     likelihood = []
     for row in csvReader:
         if row[0] == 'prior':
-            prior[row[1]] = float(row[2])
+            prior[row[1]] = math.log(float(row[2]),2)
         else:
             likelihood.append(row)
 

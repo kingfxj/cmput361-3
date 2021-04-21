@@ -72,8 +72,8 @@ class FeatureSelect:
                     N_1 =self.binCount[term]['Total']
                     #Documents that contain the term and contain the class 
                     N_1_1 = self.binCount[term][c]
-                    if N_1_1 == 0:
-                        N_1_1=1
+                    #if N_1_1 == 0:
+                        #N_1_1=1
                     if self.binCount[term][c] == 0:
                         # Documents that Contain the term but do not contain the class
                         N_1_0 = self.binCount[term]['Total']
@@ -96,6 +96,7 @@ class FeatureSelect:
                     part_3 = (N_1_0/N)*math.log((N*N_1_0)/N_1*N_0,2)
                     part_4 =  (N_0_0/N)*math.log((N*N_0_0)/N_0*N_0,2)
                     mutualInfo = part_1 + part_2+ part_3 + part_4 
+                    print(mutualInfo)
                     self.kContainer[c][term] = mutualInfo
 
     def selectTopK(self):

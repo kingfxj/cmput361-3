@@ -1,4 +1,4 @@
-import csv, json, math, nltk, string, sys
+import csv, json, nltk, string, sys
 from nltk import WordNetLemmatizer
 from os import path
 
@@ -58,7 +58,7 @@ class Train:
             self.priors['Total']+=1
         for key in self.priors:
             if key != 'Total':
-                writer.writerow(['prior',key,math.log(self.priors[key]/self.priors['Total'],2)])
+                writer.writerow(['prior',key,self.priors[key]/self.priors['Total']])
 
     # Get conditional probability for each token in each class
     def getLikelihood(self, writer):
@@ -67,7 +67,7 @@ class Train:
                 if category != 'Total' and word != '':
                     self.freqDist[word][category]+=1
                     divisor = self.size +1
-                    writer.writerow(['likelihood',category,word,math.log(self.freqDist[word][category]/divisor,2)])
+                    writer.writerow(['likelihood',category,word,self.freqDist[word][category]/divisor])
         
 def main():
     # Get the arguments and validate the number of arguments
