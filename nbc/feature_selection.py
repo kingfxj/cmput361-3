@@ -26,7 +26,7 @@ class FeatureSelect:
         self.classCount = {'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
         self.binCount = {}
         self.vocabCounts={}
-        self.kContainer = {'business':{},'entertainment':{},'politics':{},'sport':{},'tech':{}}
+        self.kContainer = {}
         self.topKterms={'business':[],'entertainment':[],'politics':[],'sport':[],'tech':[]}
 
     def getVocab(self):
@@ -49,8 +49,7 @@ class FeatureSelect:
                 token = tokenize(token)
                 self.binCount[token][document['category']]+=1
                 self.binCount[token]['Total']+=1
-        #print(self.binCount)
-        print(self.binCount['the'])
+
 
     def getClassCount(self):
         for document in self.corpus:
@@ -61,21 +60,23 @@ class FeatureSelect:
     def getMutualInfo(self):
         #total number of documents
         N= len(self.corpus)
-        for c in self.classList:
-            #self.kContainer[c] = {}
-            # Documents that do not contain the term but do contatin the class
-            N_0_1 = self.classCount[c] ###################################VERIFY
-            
-            for term in self.binCount:
-                self.kContainer[c][term] = 0
+        for document in self.corpus:
+            for term in document['text']:
+                term = tokenize(term)
+                #self.kContainer[c] = {}
+                # Documents that do not contain the term but do contatin the class
+                cat = document['category']
+                N_0_1 = self.classCount[document['category']] ###################################VERIFY
+                
+                self.kContainer[term]={'business':0,'entertainment':0,'politics':0,'sport':0,'tech':0,'Total':0}
                 if term != '':
                      # Documents that contain the term
                     N_1 =self.binCount[term]['Total']
                     #Documents that contain the term and contain the class 
-                    N_1_1 = self.binCount[term][c]
+                    N_1_1 = self.binCount[term][cat]
                     if N_1_1 == 0:
                         N_1_1=1
-                    if self.binCount[term][c] == 0:
+                    if self.binCount[term][cat] == 0:
                         # Documents that Contain the term but do not contain the class
                         N_1_0 = self.binCount[term]['Total']
                     else:
@@ -84,7 +85,7 @@ class FeatureSelect:
                     if N_0_1 <1 :
                         N_0_1 =1
                     #documents without term and without class
-                    N_0_0 = len(self.corpus) - self.classCount[c] - self.binCount[term]['Total'] ############ VERIFY
+                    N_0_0 = len(self.corpus) - self.classCount[cat] - self.binCount[term]['Total'] ############ VERIFY
                     if N_0_0 < 1:
                         N_0_0 =1
                      #documents that do not have the term
@@ -96,10 +97,9 @@ class FeatureSelect:
                     part_2 = (N_0_1/N)*math.log((N*N_0_1)/N_0*N_1,2)
                     part_3 = (N_1_0/N)*math.log((N*N_1_0)/N_1*N_0,2)
                     part_4 =  (N_0_0/N)*math.log((N*N_0_0)/N_0*N_0,2)
-                  
+                    
                     mutualInfo = part_1 + part_2+ part_3 + part_4 
-                    self.kContainer[c][term] = mutualInfo
-            print(c)
+                    self.kContainer[term][cat] = mutualInfo
             
     def selectTopK(self):
         #for each class, find the K number of terms that share the most mutual unfo with tthat class
@@ -108,19 +108,17 @@ class FeatureSelect:
             count = 0
             while count < self.k:
                 maxInfo ={'placeHolder':0} 
-                for term in self.kContainer[c]:
+                for term in self.kContainer:
                     comp = [maxInfo[key] for key in maxInfo.keys()][0]
-                    if self.kContainer[c][term]>comp:
+                    if self.kContainer[term][c]>comp:
                 
-                        maxInfo = {term: self.kContainer[c][term]}
+                        maxInfo = {term: self.kContainer[term][c]}
+                        self.kContainer[term][c]=0
 
-                for i in maxInfo.keys():
-                    self.kContainer[c].pop(i)
                 termToAdd = [key for key in maxInfo.keys()][0]
                 self.topKterms[c].append(termToAdd)
                 count +=1
-            print(c)
-            print(self.topKterms[c])
+
 
 
     def createOutput(self,file):
